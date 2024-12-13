@@ -3,34 +3,49 @@ pipeline {
     stages {
         stage('Cleanup') {
             steps {
-                sh 'rm -rf venv'  // Remove old venv directory
+                // Remove the old virtual environment
+                sh 'rm -rf venv'
             }
         }
         stage('Clone Repository') {
             steps {
+                // Clone the repository
                 git branch: 'main', url: 'https://github.com/thanzz12/python.git'
             }
         }
         stage('Install Dependencies') {
             steps {
+                // Create a new virtual environment and install dependencies
                 sh '''
+                # Create the virtual environment
                 python3 -m venv venv
-                chmod -R 777 venv  # Ensure correct permissions on the virtual environment
-                bash -c "source venv/bin/activate && pip install --upgrade pip && pip install -r requirements.txt || pip install flask"
+
+                # Ensure correct permissions on the virtual environment
+                chmod -R 755 venv
+
+                # Install dependencies
+                source venv/bin/activate
+                pip install --upgrade pip
+                pip install -r requirements.txt || pip install flask
                 '''
             }
         }
         stage('Run Application') {
             steps {
+                // Ensure no other app instances are running
                 sh '''
                 pkill -f app.py || true
-                bash -c "source venv/bin/activate && nohup python app.py > app.log 2>&1 &"
+
+                # Activate virtual environment and start the application
+                source venv/bin/activate
+                nohup python app.py > app.log 2>&1 &
                 '''
             }
         }
     }
     post {
         always {
+            // Tail the logs to get the last 20 lines
             sh 'tail -n 20 app.log || true'
         }
     }
