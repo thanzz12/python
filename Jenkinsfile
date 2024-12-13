@@ -3,7 +3,7 @@ pipeline {
     stages {
         stage('Cleanup') {
             steps {
-                sh 'rm -rf venv'  // Remove any old venv directory
+                sh 'rm -rf venv'  // Remove old venv directory
             }
         }
         stage('Clone Repository') {
@@ -15,6 +15,7 @@ pipeline {
             steps {
                 sh '''
                 python3 -m venv venv
+                chmod -R 777 venv  # Ensure correct permissions on the virtual environment
                 bash -c "source venv/bin/activate && pip install --upgrade pip && pip install -r requirements.txt || pip install flask"
                 '''
             }
