@@ -3,7 +3,7 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                git 'https://github.com/thanzz12/python.git'
+                git branch: 'main', url: 'https://github.com/thanzz12/python.git'
             }
         }
         stage('Install Dependencies') {
