@@ -10,14 +10,17 @@ pipeline {
             steps {
                 sh '''
                 python3 -m venv venv
-                . venv/bin/activate
-                pip install -r requirements.txt || echo "flask" > requirements.txt && pip install flask
+                # Use bash to activate the virtual environment
+                bash -c "source venv/bin/activate && pip install -r requirements.txt || pip install flask"
                 '''
             }
         }
         stage('Run Application') {
             steps {
-                sh 'python app.py &'
+                sh '''
+                # Run the application in the background with nohup to avoid blocking Jenkins
+                nohup python app.py &
+                '''
             }
         }
     }
