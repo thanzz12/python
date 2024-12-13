@@ -23,10 +23,8 @@ pipeline {
                 # Ensure correct permissions on the virtual environment
                 chmod -R 755 venv
 
-                # Install dependencies
-                source venv/bin/activate
-                pip install --upgrade pip
-                pip install -r requirements.txt || pip install flask
+                # Use bash to activate the virtual environment and install dependencies
+                bash -c "source venv/bin/activate && pip install --upgrade pip && pip install -r requirements.txt || pip install flask"
                 '''
             }
         }
@@ -36,9 +34,8 @@ pipeline {
                 sh '''
                 pkill -f app.py || true
 
-                # Activate virtual environment and start the application
-                source venv/bin/activate
-                nohup python app.py > app.log 2>&1 &
+                # Use bash to activate virtual environment and start the application
+                bash -c "source venv/bin/activate && nohup python app.py > app.log 2>&1 &"
                 '''
             }
         }
